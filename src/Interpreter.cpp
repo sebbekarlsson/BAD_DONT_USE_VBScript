@@ -38,7 +38,9 @@ std::string Interpreter::eval(std::string contents) {
         }
 
         if (token != nullptr)
-            token->execute(args);
+            last_output = token->execute(args);
+        
+        args.clear();
     }
 
     return contents;
