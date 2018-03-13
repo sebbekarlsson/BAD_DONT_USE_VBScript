@@ -59,14 +59,13 @@ std::string Interpreter::eval(std::string contents) {
                 }
 
             if (args_count != args_limit) {
-                if (!defining && !assigning) {
-                    if (InterpreterTools::is_variable(word)) {
-                        word = memory->get_variable(word);
-                    } else {
-                        word = InterpreterTools::unquote(word);
-                    }
-                } else if (assigning) {
-                    if (InterpreterTools::is_variable(word) && args_count != args_limit+1) {
+                bool countcheck = true;
+
+                if (assigning)
+                    countcheck = args_count != args_limit + 1;
+
+                if (!defining) {
+                    if (InterpreterTools::is_variable(word) && countcheck) {
                         word = memory->get_variable(word);
                     } else {
                         word = InterpreterTools::unquote(word);
