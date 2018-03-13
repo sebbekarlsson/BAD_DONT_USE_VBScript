@@ -7,3 +7,4 @@
 - [ ] Conditional statements
 - [ ] Sub (Functions)
 - [ ] Arrays
+- [ ] Variable types
