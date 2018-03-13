@@ -6,7 +6,7 @@
 extern Memory* memory;
 
 token_Dim::token_Dim() : Token() {
-
+    this->startname = "Dim";
 };
 
 std::string token_Dim::execute(std::vector<std::string> args) {
