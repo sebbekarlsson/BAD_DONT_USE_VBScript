@@ -30,17 +30,22 @@ std::string Interpreter::eval(std::string contents) {
     int args_limit = 0;
 
     while (std::getline(f, line)) {
+
+        // save all words in a vector for each line
+        std::vector<std::string> words;
         std::istringstream iss(line);
         std::string word;
-        int args_count = 0;
-        std::vector<std::string> words;
-
+        
         while(getline(iss, word, ' '))
             words.push_back(word);
+        
+        int args_count = 0;
+        int word_count = 0;
+
 
         for (std::vector<std::string>::const_iterator it = words.begin(); it != words.end(); it++) {
             std::string word = *it;
-            std::string next_word = words[std::min((int)words.size()-1, 1)];
+            std::string next_word = words[std::min((int)words.size()-1, word_count+1)];
 
             if (tokens.find(word) != tokens.end())
                 token = tokens[word];
@@ -76,6 +81,7 @@ std::string Interpreter::eval(std::string contents) {
             }
 
             args_count++;
+            word_count++;
         }
 
         if (token != nullptr)

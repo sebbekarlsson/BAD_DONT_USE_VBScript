@@ -8,3 +8,4 @@
 - [ ] Sub (Functions)
 - [ ] Arrays
 - [ ] Variable types
+- [ ] continuation (`:` character)
