@@ -11,7 +11,7 @@ else
 endif
 
 
-EXEC = visualbasic.out
+EXEC = vbscript.out
 SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 

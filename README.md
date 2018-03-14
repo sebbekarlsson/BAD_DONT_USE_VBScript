@@ -16,5 +16,5 @@
 
     make
 
-> This will generate a `visualbasic.out` binary that you can use to execute VBS
+> This will generate a `vbscript.out` binary that you can use to execute VBS
 > code.
