@@ -10,6 +10,15 @@ bool InterpreterTools::is_variable(std::string argument) {
         !isdigit(argument.at(0));
 };
 
+bool InterpreterTools::is_math_operator(std::string argument) {
+    return argument == "+" ||
+        argument == "-" ||
+        argument == "*" ||
+        argument == "/" ||
+        argument == "%" ||
+        argument == "^";
+};
+
 std::string InterpreterTools::unquote(std::string argument) {
     argument.erase(
         std::remove(argument.begin(), argument.end(), '"'), argument.end()

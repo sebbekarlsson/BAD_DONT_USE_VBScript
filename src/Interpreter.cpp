@@ -30,8 +30,6 @@ std::string Interpreter::eval(std::string contents) {
     int args_limit = 0;
 
     while (std::getline(f, line)) {
-
-        // save all words in a vector for each line
         std::vector<std::string> words;
         std::istringstream iss(line);
         std::string word;
@@ -41,10 +39,12 @@ std::string Interpreter::eval(std::string contents) {
         
         int args_count = 0;
         int word_count = 0;
-
+        float math_value = 0.0f;
+        bool math = false;
 
         for (std::vector<std::string>::const_iterator it = words.begin(); it != words.end(); it++) {
             std::string word = *it;
+            std::string prev_word = words[std::max(0, word_count-1)];
             std::string next_word = words[std::min((int)words.size()-1, word_count+1)];
 
             if (tokens.find(word) != tokens.end())
@@ -69,11 +69,32 @@ std::string Interpreter::eval(std::string contents) {
                 if (assigning)
                     countcheck = args_count != args_limit + 1;
 
-                if (!defining) {
+                bool is_math_op = InterpreterTools::is_math_operator(word);
+                bool is_numeric = isdigit(word.at(0));
+                bool is_prev_math_op = InterpreterTools::is_math_operator(prev_word);
+                bool is_prev_numeric = isdigit(prev_word.at(0));
+
+                if (!defining && !is_math_op) {
                     if (InterpreterTools::is_variable(word) && countcheck) {
                         word = memory->get_variable(word);
                     } else {
                         word = InterpreterTools::unquote(word);
+                    }
+                }
+                
+                if (is_prev_math_op) {
+                    int argsindex = 0;
+                    
+                    if (assigning) {
+                        argsindex = 2;
+                    } else if (!assigning && !defining) {
+                        argsindex = 0;
+                    }
+
+                    if (prev_word == "+") {
+                        args[argsindex] = std::to_string(std::stof(args[argsindex]) + std::stof(word));
+                    } else if (prev_word == "-") {
+                    
                     }
                 }
 
@@ -84,8 +105,9 @@ std::string Interpreter::eval(std::string contents) {
             word_count++;
         }
 
-        if (token != nullptr)
+        if (token != nullptr) {
             last_output = token->execute(args);
+        }
 
         token = nullptr;
         next_token = nullptr;

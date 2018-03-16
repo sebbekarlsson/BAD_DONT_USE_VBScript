@@ -7,6 +7,7 @@
 
 namespace InterpreterTools {
     bool is_variable(std::string argument);
+    bool is_math_operator(std::string argument);
 
     std::string unquote(std::string argument);
 };
