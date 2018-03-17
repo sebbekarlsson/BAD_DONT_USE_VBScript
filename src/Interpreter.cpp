@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <math.h>
 
 
 Interpreter::Interpreter() {};
@@ -115,6 +116,9 @@ std::string Interpreter::eval(std::string contents) {
                         args[argsindex] = res;
                     } else if (prev_word == "/") {
                         std::string res = std::to_string(basevalue / currentvalue);
+                        args[argsindex] = res;
+                    } else if (prev_word == "^") {
+                        std::string res = std::to_string(pow(basevalue, currentvalue));
                         args[argsindex] = res;
                     } else if (prev_word == "&") {
                         std::string res = args[argsindex] + word;
