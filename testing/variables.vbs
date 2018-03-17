@@ -7,4 +7,5 @@ x = 1 + 2 + z
 
 another = x
 
-Wscript.Echo x * 2
+Wscript.Echo x * 20
+Wscript.Echo 1 % 4

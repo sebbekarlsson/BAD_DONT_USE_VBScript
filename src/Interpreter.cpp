@@ -103,6 +103,9 @@ std::string Interpreter::eval(std::string contents) {
                     } else if (prev_word == "*") {
                         std::string res = std::to_string(basevalue * currentvalue);
                         args[argsindex] = res;
+                    } else if (prev_word == "Mod" || prev_word == "%") {
+                        std::string res = std::to_string((int)basevalue % (int)currentvalue);
+                        args[argsindex] = res;
                     }
                 }
 

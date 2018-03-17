@@ -16,7 +16,8 @@ bool InterpreterTools::is_math_operator(std::string argument) {
         argument == "*" ||
         argument == "/" ||
         argument == "%" ||
-        argument == "^";
+        argument == "^" ||
+        argument == "Mod";
 };
 
 std::string InterpreterTools::unquote(std::string argument) {
