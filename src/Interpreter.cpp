@@ -95,9 +95,14 @@ std::string Interpreter::eval(std::string contents) {
                     float currentvalue = std::stof(word);
 
                     if (prev_word == "+") {
-                        args[argsindex] =  std::to_string(basevalue + currentvalue);
+                        std::string res = std::to_string(basevalue + currentvalue);
+                        args[argsindex] = res;
                     } else if (prev_word == "-") {
-                        args[argsindex] = std::to_string(basevalue - currentvalue); 
+                        std::string res = std::to_string(basevalue + currentvalue);
+                        args[argsindex] = res;
+                    } else if (prev_word == "*") {
+                        std::string res = std::to_string(basevalue * currentvalue);
+                        args[argsindex] = res;
                     }
                 }
 
