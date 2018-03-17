@@ -70,11 +70,13 @@ std::string Interpreter::eval(std::string contents) {
                     countcheck = args_count != args_limit + 1;
 
                 bool is_math_op = InterpreterTools::is_math_operator(word);
+                bool is_concat = word == "&";
                 bool is_numeric = isdigit(word.at(0));
                 bool is_prev_math_op = InterpreterTools::is_math_operator(prev_word);
+                bool is_prev_concat = prev_word == "&";
                 bool is_prev_numeric = isdigit(prev_word.at(0));
 
-                if (!defining && !is_math_op) {
+                if (!defining && !is_math_op && !is_concat) {
                     if (InterpreterTools::is_variable(word) && countcheck) {
                         word = memory->get_variable(word);
                     } else {
@@ -82,7 +84,7 @@ std::string Interpreter::eval(std::string contents) {
                     }
                 }
                 
-                if (is_prev_math_op) {
+                if (is_prev_math_op || is_prev_concat) {
                     int argsindex = 0;
                     
                     if (assigning) {
@@ -91,8 +93,13 @@ std::string Interpreter::eval(std::string contents) {
                         argsindex = 0;
                     }
 
-                    float basevalue = std::stof(args[argsindex]);
-                    float currentvalue = std::stof(word);
+                    float basevalue = 0.0f;
+                    float currentvalue = 0.0f;
+
+                    if (is_prev_math_op) {
+                        basevalue = std::stof(args[argsindex]);
+                        currentvalue = std::stof(word);
+                    }
 
                     if (prev_word == "+") {
                         std::string res = std::to_string(basevalue + currentvalue);
@@ -108,6 +115,9 @@ std::string Interpreter::eval(std::string contents) {
                         args[argsindex] = res;
                     } else if (prev_word == "/") {
                         std::string res = std::to_string(basevalue / currentvalue);
+                        args[argsindex] = res;
+                    } else if (prev_word == "&") {
+                        std::string res = args[argsindex] + word;
                         args[argsindex] = res;
                     }
                 }
