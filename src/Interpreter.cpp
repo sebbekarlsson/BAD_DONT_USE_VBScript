@@ -91,10 +91,13 @@ std::string Interpreter::eval(std::string contents) {
                         argsindex = 0;
                     }
 
+                    float basevalue = std::stof(args[argsindex]);
+                    float currentvalue = std::stof(word);
+
                     if (prev_word == "+") {
-                        args[argsindex] = std::to_string(std::stof(args[argsindex]) + std::stof(word));
+                        args[argsindex] =  std::to_string(basevalue + currentvalue);
                     } else if (prev_word == "-") {
-                    
+                        args[argsindex] = std::to_string(basevalue - currentvalue); 
                     }
                 }
 
