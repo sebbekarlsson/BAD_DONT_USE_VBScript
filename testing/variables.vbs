@@ -9,3 +9,4 @@ another = x
 
 Wscript.Echo x * 20
 Wscript.Echo 1 % 4
+Wscript.Echo 4 / 2
