@@ -17,15 +17,15 @@ std::string Interpreter::eval(std::string contents) {
 
     std::istringstream f(contents);
 
-    std::string line;
-    std::string m_line;
-    std::string last_output;
+    std::string line = "";
+    std::string m_line = "";
+    std::string last_output = "";
 
     std::vector<std::string> args;
 
-    Token* token;
-    Token* next_token;
-    Function* func;
+    Token* token = nullptr;
+    Token* next_token = nullptr;
+    Function* func = nullptr;
 
     bool defining = false;
     bool assigning = false;
@@ -80,6 +80,7 @@ std::string Interpreter::eval(std::string contents) {
                 if (assigning)
                     countcheck = args_count != args_limit + 1;
 
+                bool is_func = functions.find(word) != functions.end();
                 bool is_math_op = InterpreterTools::is_math_operator(word);
                 bool is_concat = word == "&";
                 bool is_numeric = isdigit(word.at(0));
@@ -87,12 +88,16 @@ std::string Interpreter::eval(std::string contents) {
                 bool is_prev_concat = prev_word == "&";
                 bool is_prev_numeric = isdigit(prev_word.at(0));
 
-                if (!defining && !is_math_op && !is_concat) {
+                if (!defining && !is_math_op && !is_concat && !is_func) {
                     if (InterpreterTools::is_variable(word) && countcheck) {
                         word = memory->get_variable(word);
                     } else {
                         word = InterpreterTools::unquote(word);
                     }
+                }
+
+                if (is_func) {
+                    std::cout << word << std::endl;
                 }
                 
                 if (is_prev_math_op || is_prev_concat) {
@@ -160,5 +165,5 @@ std::string Interpreter::eval(std::string contents) {
         args_limit = 0;
     }
 
-    return contents;
+    return last_output;
 };

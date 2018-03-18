@@ -11,13 +11,16 @@ std::string function_Asc::execute(std::vector<std::string> args) {
     if (args.size() < 1)
         return "";
 
-    char ascii;
-	int numeric;
 
-    ascii = args[0].at(0);
+    std::cout << "Asc received: " << args[0] << std::endl;
 
-	//cout << "Its ascii value is: " << (int) ascii << endl;
-	//cout << "The ascii value of " << numeric << " is " << (char) numeric;
-    
-    return std::to_string((int) ascii);
+    if (isdigit(args[0].at(0))) {
+        int numeric;
+        numeric = std::stoi(args[0]);
+        return std::to_string((char) numeric);
+    } else {
+        char ascii;
+        ascii = args[0].at(0);
+        return std::to_string((int) ascii);
+    }
 };

@@ -9,7 +9,7 @@ my_name = "John"
 
 another = x
 
-Asc("a")
+ascchar = Asc("a")
 
 Wscript.Echo "Name:" & my_name
 Wscript.Echo x * 20

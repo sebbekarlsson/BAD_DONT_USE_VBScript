@@ -1,6 +1,8 @@
 
 # Created by https://www.gitignore.io/api/c++,vim,macos
 
+vgcore.*
+
 ### C++ ###
 # Prerequisites
 *.d
