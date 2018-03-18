@@ -18,12 +18,14 @@ std::string Interpreter::eval(std::string contents) {
     std::istringstream f(contents);
 
     std::string line;
+    std::string m_line;
     std::string last_output;
 
     std::vector<std::string> args;
 
     Token* token;
     Token* next_token;
+    Function* func;
 
     bool defining = false;
     bool assigning = false;
@@ -31,8 +33,13 @@ std::string Interpreter::eval(std::string contents) {
     int args_limit = 0;
 
     while (std::getline(f, line)) {
+        m_line = line;
+
+        InterpreterTools::str_replace(m_line, "(", " ");
+        InterpreterTools::str_replace(m_line, ")", " ");
+
         std::vector<std::string> words;
-        std::istringstream iss(line);
+        std::istringstream iss(m_line);
         std::string word;
         
         while(getline(iss, word, ' '))
@@ -53,6 +60,9 @@ std::string Interpreter::eval(std::string contents) {
 
             if (tokens.find(next_word) != tokens.end())
                 next_token = tokens[next_word];
+
+            if (functions.find(word) != functions.end())
+                func = functions[word];
 
             if (token != nullptr)
                 if (token->startname == "Dim")
@@ -137,8 +147,13 @@ std::string Interpreter::eval(std::string contents) {
             last_output = token->execute(args);
         }
 
+        if (func != nullptr) {
+            last_output = func->execute(args);
+        }
+
         token = nullptr;
         next_token = nullptr;
+        func = nullptr;
         args.clear();
         defining = false;
         assigning = false;
