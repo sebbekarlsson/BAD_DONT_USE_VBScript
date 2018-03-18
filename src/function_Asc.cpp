@@ -4,7 +4,7 @@
 
 
 function_Asc::function_Asc() : Function() {
-    this->name = "Dim";
+    this->name = "Asc";
 };
 
 std::string function_Asc::execute(std::vector<std::string> args) {
