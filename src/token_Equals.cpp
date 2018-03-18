@@ -13,6 +13,8 @@ std::string token_Equals::execute(std::vector<std::string> args) {
     if (args.size() < 1)
         return "";
     
+    std::cout << "eq rec: " << args[0] << " = " << args[2] << std::endl;
+
     memory->define_variable(args[0], args[2]);
 
     return args[0];

@@ -11,6 +11,7 @@ another = x
 
 ascchar = Asc("a")
 
+Wscript.Echo ascchar
 Wscript.Echo "Name:" & my_name
 Wscript.Echo x * 20
 Wscript.Echo 1 % 4

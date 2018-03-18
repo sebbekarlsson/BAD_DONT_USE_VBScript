@@ -97,7 +97,16 @@ std::string Interpreter::eval(std::string contents) {
                 }
 
                 if (is_func) {
-                    std::cout << word << std::endl;
+                    std::vector<std::string> funcargs;
+                    
+                    for (int ii = word_count + 1; ii < words.size(); ii++) {
+                        funcargs.push_back(InterpreterTools::unquote(words[ii]));
+                    }
+
+                    func = functions[word];
+                        args[2] = func->execute(funcargs);
+                    
+                    is_func = false;
                 }
                 
                 if (is_prev_math_op || is_prev_concat) {
@@ -150,10 +159,6 @@ std::string Interpreter::eval(std::string contents) {
 
         if (token != nullptr) {
             last_output = token->execute(args);
-        }
-
-        if (func != nullptr) {
-            last_output = func->execute(args);
         }
 
         token = nullptr;
