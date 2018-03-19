@@ -146,6 +146,8 @@ std::string Interpreter::eval(std::string contents) {
 
             args_count++;
             word_count++;
+            delete argument;
+            delete prev_argument;
         }
 
         if (token != nullptr) {
