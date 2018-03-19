@@ -47,13 +47,14 @@ std::string Interpreter::eval(std::string contents) {
         
         int args_count = 0;
         int word_count = 0;
-        float math_value = 0.0f;
-        bool math = false;
 
         for (std::vector<std::string>::const_iterator it = words.begin(); it != words.end(); it++) {
             std::string word = *it;
             std::string prev_word = words[std::max(0, word_count-1)];
             std::string next_word = words[std::min((int)words.size()-1, word_count+1)];
+
+            Argument* argument = new Argument(word);
+            Argument* prev_argument = new Argument(prev_word);
 
             if (tokens.find(word) != tokens.end())
                 token = tokens[word];
@@ -80,15 +81,7 @@ std::string Interpreter::eval(std::string contents) {
                 if (assigning)
                     countcheck = args_count != args_limit + 1;
 
-                bool is_func = functions.find(word) != functions.end();
-                bool is_math_op = InterpreterTools::is_math_operator(word);
-                bool is_concat = word == "&";
-                bool is_numeric = isdigit(word.at(0));
-                bool is_prev_math_op = InterpreterTools::is_math_operator(prev_word);
-                bool is_prev_concat = prev_word == "&";
-                bool is_prev_numeric = isdigit(prev_word.at(0));
-
-                if (!defining && !is_math_op && !is_concat && !is_func) {
+                if (!defining && !argument->is_math_op && !argument->is_concat && !argument->is_func) {
                     if (InterpreterTools::is_variable(word) && countcheck) {
                         word = memory->get_variable(word);
                     } else {
@@ -96,7 +89,7 @@ std::string Interpreter::eval(std::string contents) {
                     }
                 }
 
-                if (is_func) {
+                if (argument->is_func) {
                     std::vector<std::string> funcargs;
                     
                     for (int ii = word_count + 1; ii < words.size(); ii++) {
@@ -104,12 +97,10 @@ std::string Interpreter::eval(std::string contents) {
                     }
 
                     func = functions[word];
-                        args[2] = func->execute(funcargs);
-                    
-                    is_func = false;
+                    args[2] = func->execute(funcargs);
                 }
                 
-                if (is_prev_math_op || is_prev_concat) {
+                if (prev_argument->is_math_op || prev_argument->is_concat) {
                     int argsindex = 0;
                     
                     if (assigning) {
@@ -121,7 +112,7 @@ std::string Interpreter::eval(std::string contents) {
                     float basevalue = 0.0f;
                     float currentvalue = 0.0f;
 
-                    if (is_prev_math_op) {
+                    if (prev_argument->is_math_op) {
                         basevalue = std::stof(args[argsindex]);
                         currentvalue = std::stof(word);
                     }

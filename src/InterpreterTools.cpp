@@ -28,7 +28,7 @@ std::string InterpreterTools::unquote(std::string argument) {
     return argument;
 };
 
-std::string InterpreterTools::str_replace(std::string& subject, const std::string& search, const std::string& replace) {
+void InterpreterTools::str_replace(std::string& subject, const std::string& search, const std::string& replace) {
     size_t pos = 0;
     
     while((pos = subject.find(search, pos)) != std::string::npos) {
