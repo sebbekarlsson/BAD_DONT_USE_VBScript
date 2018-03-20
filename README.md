@@ -6,9 +6,11 @@
 > Linux / Unix / Macos.
 
 ## Installing Visual Basic Script on your UNIX machine
-* 1. Clone down this repository
-* 2. Install [ResourceManager](https://github.com/sebbekarlsson/resourcemanager)
-* 3. Compile visualbasic:
+> 1: Clone down this repository
+
+> 2: Install [ResourceManager](https://github.com/sebbekarlsson/resourcemanager)
+
+> 3: Compile:
 
     make
 
