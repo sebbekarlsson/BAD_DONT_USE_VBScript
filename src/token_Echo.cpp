@@ -9,8 +9,8 @@ token_Echo::token_Echo() : Token() {
 
 };
 
-std::string token_Echo::execute(std::vector<std::string> args) {
-    if (args.size() < 1)
+std::string token_Echo::execute() {
+    if (this->args.size() < 1)
         return "";
 
     std::cout << args[0] << std::endl;

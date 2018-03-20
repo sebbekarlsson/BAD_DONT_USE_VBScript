@@ -7,7 +7,7 @@ class token_Dim: public Token {
     public:
         token_Dim();
 
-        std::string execute(std::vector<std::string> args);
+        std::string execute();
 };
 
 #endif

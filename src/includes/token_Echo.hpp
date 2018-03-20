@@ -7,7 +7,7 @@ class token_Echo: public Token {
     public:
         token_Echo();
 
-        std::string execute(std::vector<std::string> args);
+        std::string execute();
 };
 
 #endif

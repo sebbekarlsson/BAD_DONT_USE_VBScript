@@ -7,7 +7,7 @@ class token_Equals: public Token {
     public:
         token_Equals();
 
-        std::string execute(std::vector<std::string> args);
+        std::string execute();
 };
 
 #endif

@@ -20,129 +20,58 @@ std::string Interpreter::eval(std::string contents) {
     std::string line;
     std::string last_output;
 
-    std::vector<std::string> args;
-
-    Token* token;
-    Token* next_token;
-
-    bool defining = false;
-    bool assigning = false;
-
-    int args_limit = 0;
-
     while (std::getline(f, line)) {
-        std::vector<std::string> words;
         std::istringstream iss(line);
-        std::string word;
+        std::string character;
+        std::string next_character;
+        std::string charbuffer = "";
+        std::string prev_charbuffer = "";
+        std::vector<std::string> args;
+        bool end_of_token = false;
+        int charcount = 0;
         
-        while(getline(iss, word, ' '))
-            words.push_back(word);
-        
-        int args_count = 0;
-        int word_count = 0;
-        float math_value = 0.0f;
-        bool math = false;
+        for (
+            std::string::iterator it = line.begin();
+            it != line.end(); it++
+        ) {
+            character = *it;
+            
+            charbuffer += character;
 
-        for (std::vector<std::string>::const_iterator it = words.begin(); it != words.end(); it++) {
-            std::string word = *it;
-            std::string prev_word = words[std::max(0, word_count-1)];
-            std::string next_word = words[std::min((int)words.size()-1, word_count+1)];
+            end_of_token = charcount == line.size() - 1 ||
+                character == " " ||
+                character == "=" ||
+                character == "," ||
+                character == "\n" ||
+                character == "\r\n" ||
+                character == "(";
 
-            if (tokens.find(word) != tokens.end())
-                token = tokens[word];
-
-            if (tokens.find(next_word) != tokens.end())
-                next_token = tokens[next_word];
-
-            if (token != nullptr)
-                if (token->startname == "Dim")
-                    defining = true;
-
-            if (next_token != nullptr)
-                if (next_token->startname == "=") {
-                    assigning = true;
-                    args_limit = -1;
-                }
-
-            if (args_count != args_limit) {
-                bool countcheck = true;
-
-                if (assigning)
-                    countcheck = args_count != args_limit + 1;
-
-                bool is_math_op = InterpreterTools::is_math_operator(word);
-                bool is_concat = word == "&";
-                bool is_numeric = isdigit(word.at(0));
-                bool is_prev_math_op = InterpreterTools::is_math_operator(prev_word);
-                bool is_prev_concat = prev_word == "&";
-                bool is_prev_numeric = isdigit(prev_word.at(0));
-
-                if (!defining && !is_math_op && !is_concat) {
-                    if (InterpreterTools::is_variable(word) && countcheck) {
-                        word = memory->get_variable(word);
-                    } else {
-                        word = InterpreterTools::unquote(word);
-                    }
-                }
-                
-                if (is_prev_math_op || is_prev_concat) {
-                    int argsindex = 0;
-                    
-                    if (assigning) {
-                        argsindex = 2;
-                    } else if (!assigning && !defining) {
-                        argsindex = 0;
-                    }
-
-                    float basevalue = 0.0f;
-                    float currentvalue = 0.0f;
-
-                    if (is_prev_math_op) {
-                        basevalue = std::stof(args[argsindex]);
-                        currentvalue = std::stof(word);
-                    }
-
-                    if (prev_word == "+") {
-                        std::string res = std::to_string(basevalue + currentvalue);
-                        args[argsindex] = res;
-                    } else if (prev_word == "-") {
-                        std::string res = std::to_string(basevalue + currentvalue);
-                        args[argsindex] = res;
-                    } else if (prev_word == "*") {
-                        std::string res = std::to_string(basevalue * currentvalue);
-                        args[argsindex] = res;
-                    } else if (prev_word == "Mod" || prev_word == "%") {
-                        std::string res = std::to_string((int)basevalue % (int)currentvalue);
-                        args[argsindex] = res;
-                    } else if (prev_word == "/") {
-                        std::string res = std::to_string(basevalue / currentvalue);
-                        args[argsindex] = res;
-                    } else if (prev_word == "^") {
-                        std::string res = std::to_string(pow(basevalue, currentvalue));
-                        args[argsindex] = res;
-                    } else if (prev_word == "&") {
-                        std::string res = args[argsindex] + word;
-                        args[argsindex] = res;
-                    }
-                }
-
-                args.push_back(word);
+            if (character == "(") {
+                // collect arguments inside function
+                std::string lineleft = line.substr(charcount, line.rfind(")"));
+                lineleft.erase(0, 1);
+                lineleft.erase(lineleft.size() - 1);
+                std::cout << lineleft << std::endl;
+                this->eval(lineleft);
+                break;
             }
 
-            args_count++;
-            word_count++;
-        }
+            if (end_of_token) {
+                // remove ending statement character
+                charbuffer = charbuffer.substr(0, charbuffer.size()-1);
+                InterpreterTools::str_replace(charbuffer, ")", "");
 
-        if (token != nullptr) {
-            last_output = token->execute(args);
-        }
+                if (!charbuffer.empty() && charbuffer != " ") {
+                    args.push_back(charbuffer);
+                }
 
-        token = nullptr;
-        next_token = nullptr;
-        args.clear();
-        defining = false;
-        assigning = false;
-        args_limit = 0;
+                prev_charbuffer = charbuffer;
+                charbuffer = "";
+                end_of_token = false;
+            }
+
+            charcount++;
+        }
     }
 
     return contents;
