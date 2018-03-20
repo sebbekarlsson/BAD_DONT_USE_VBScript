@@ -1,4 +1,3 @@
 Dim x, y, z
 
-
-mymethod(myothermethod(4, 2), 8)
+x = 2

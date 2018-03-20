@@ -19,6 +19,9 @@ std::string Interpreter::eval(std::string contents) {
 
     std::string line;
     std::string last_output;
+    std::vector<std::string> argsstack; // arguments to be used with operator
+    std::vector<std::string> operatorstack; // operators to be used with args
+    std::vector<int> argscountstack;
 
     while (std::getline(f, line)) {
         std::istringstream iss(line);
@@ -26,7 +29,7 @@ std::string Interpreter::eval(std::string contents) {
         std::string next_character;
         std::string charbuffer = "";
         std::string prev_charbuffer = "";
-        std::vector<std::string> args;
+
         bool end_of_token = false;
         int charcount = 0;
         
@@ -36,33 +39,26 @@ std::string Interpreter::eval(std::string contents) {
         ) {
             character = *it;
             
-            charbuffer += character;
-
-            end_of_token = charcount == line.size() - 1 ||
+            end_of_token = 
                 character == " " ||
-                character == "=" ||
                 character == "," ||
-                character == "\n" ||
-                character == "\r\n" ||
                 character == "(";
-
-            if (character == "(") {
-                // collect arguments inside function
-                std::string lineleft = line.substr(charcount, line.rfind(")"));
-                lineleft.erase(0, 1);
-                lineleft.erase(lineleft.size() - 1);
-                std::cout << lineleft << std::endl;
-                this->eval(lineleft);
-                break;
-            }
-
-            if (end_of_token) {
-                // remove ending statement character
-                charbuffer = charbuffer.substr(0, charbuffer.size()-1);
+            
+            if (!end_of_token)
+                charbuffer += character;
+            
+            if (end_of_token || charcount >= line.length() - 1) {
+                InterpreterTools::str_replace(charbuffer, "(", "");
                 InterpreterTools::str_replace(charbuffer, ")", "");
 
                 if (!charbuffer.empty() && charbuffer != " ") {
-                    args.push_back(charbuffer);
+                    if (tokens.find(charbuffer) != tokens.end()) {
+                        operatorstack.push_back(charbuffer);
+                        argscountstack.push_back(0);
+                    } else {
+                        argsstack.push_back(charbuffer);
+                        argscountstack[argscountstack.size()-1] += 1;
+                    }
                 }
 
                 prev_charbuffer = charbuffer;
@@ -72,6 +68,18 @@ std::string Interpreter::eval(std::string contents) {
 
             charcount++;
         }
+    }
+
+    std::cout << "<argsstack>" << std::endl;
+    for (std::vector<std::string>::iterator it = argsstack.begin(); it != argsstack.end(); it++) {
+        std::cout << *it << std::endl;
+    }
+
+    std::cout << "<operatorstack>" << std::endl;
+    int c = 0;
+    for (std::vector<std::string>::iterator it = operatorstack.begin(); it != operatorstack.end(); it++) {
+        std::cout << *it << " <" << std::to_string(argscountstack[c]) << ">" << std::endl;
+        c++;
     }
 
     return contents;
