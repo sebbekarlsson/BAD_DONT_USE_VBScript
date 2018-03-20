@@ -46,6 +46,10 @@ std::string Interpreter::eval(std::string contents) {
             
             if (!end_of_token)
                 charbuffer += character;
+
+            // note to self:
+            // check if current is `=`,
+            // push precvious token to args instead
             
             if (end_of_token || charcount >= line.length() - 1) {
                 InterpreterTools::str_replace(charbuffer, "(", "");
