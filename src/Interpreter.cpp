@@ -13,6 +13,13 @@ Interpreter::Interpreter() {};
 
 Memory* memory = new Memory();
 
+/**
+ * Evaluates a piece of code
+ *
+ * @param std::string contents
+ *
+ * @return std::string
+ */
 std::string Interpreter::eval(std::string contents) {
 
     std::istringstream f(contents);
