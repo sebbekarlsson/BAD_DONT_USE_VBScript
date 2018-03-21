@@ -31,6 +31,7 @@ std::string Interpreter::eval(std::string contents) {
         std::string prev_charbuffer = "";
 
         bool end_of_token = false;
+        bool end_of_line = false;
         int charcount = 0;
         
         for (
@@ -43,6 +44,8 @@ std::string Interpreter::eval(std::string contents) {
                 character == " " ||
                 character == "," ||
                 character == "(";
+
+            end_of_line = charcount >= line.length() - 1;
             
             if (!end_of_token)
                 charbuffer += character;
@@ -55,8 +58,8 @@ std::string Interpreter::eval(std::string contents) {
                 argscountstack[argscountstack.size()-1] -= 1;
                 argsstack.push_back(prev_charbuffer);
             }
-            
-            if (end_of_token || charcount >= line.length() - 1) {
+
+            if (end_of_token || end_of_line) {
                 InterpreterTools::str_replace(charbuffer, "(", "");
                 InterpreterTools::str_replace(charbuffer, ")", "");
 
@@ -119,9 +122,9 @@ std::string Interpreter::eval(std::string contents) {
             argsendpointer += 1;
 
         if (*it == "Dim")
-            assigning = true;
-        if (*it == "=")
             defining = true;
+        if (*it == "=")
+            assigning = true;
 
         std::string out = *it + " - < begins at = (" + std::to_string(argspos) + ") , end at = ("+ std::to_string(argsendpointer) +")>";
 
@@ -132,8 +135,8 @@ std::string Interpreter::eval(std::string contents) {
             if (argspos < argsendpointer) {
                 std::string arg = *it2;
                 
-                if (InterpreterTools::is_variable(arg) && !assigning) {
-                    if (!(defining && tokenargscount == 0)) {
+                if (InterpreterTools::is_variable(arg) && !defining) {
+                    if (!(assigning && tokenargscount == 0)) {
                         arg = memory->get_variable(arg);
                     }
                 }
@@ -151,17 +154,17 @@ std::string Interpreter::eval(std::string contents) {
             }
         }
 
-        assigning = false;
-        defining = false;
-
         out += " | will call args: (" + debug + ")";
         std::cout << out << std::endl;
         
         if (token != nullptr)
-            token->execute();
+            last_output = token->execute();
 
         if (func != nullptr)
-            func->execute();
+            last_output = func->execute();
+
+        assigning = false;
+        defining = false;
         
         c++;
     }
