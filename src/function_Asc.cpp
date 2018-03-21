@@ -11,9 +11,6 @@ std::string function_Asc::execute() {
     if (this->args.size() < 1)
         return "";
 
-
-    std::cout << "Asc received: " << args[0] << std::endl;
-
     if (isdigit(args[0].at(0))) {
         int numeric;
         numeric = std::stoi(args[0]);

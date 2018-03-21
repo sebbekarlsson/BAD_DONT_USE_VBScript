@@ -50,13 +50,18 @@ std::string Interpreter::eval(std::string contents) {
             // note to self:
             // check if current is `=`,
             // push precvious token to args instead
+            if (character == "=") {
+                argsstack.erase(argsstack.end()-1);
+                argscountstack[argscountstack.size()-1] -= 1;
+                argsstack.push_back(prev_charbuffer);
+            }
             
             if (end_of_token || charcount >= line.length() - 1) {
                 InterpreterTools::str_replace(charbuffer, "(", "");
                 InterpreterTools::str_replace(charbuffer, ")", "");
 
                 if (!charbuffer.empty() && charbuffer != " ") {
-                    if (tokens.find(charbuffer) != tokens.end()) {
+                    if (tokens.find(charbuffer) != tokens.end() || functions.find(charbuffer) != functions.end()) {
                         operatorstack.push_back(charbuffer);
                         argscountstack.push_back(0);
                     } else {
@@ -78,11 +83,86 @@ std::string Interpreter::eval(std::string contents) {
     for (std::vector<std::string>::iterator it = argsstack.begin(); it != argsstack.end(); it++) {
         std::cout << *it << std::endl;
     }
-
+    std::cout << "</argsstack>" << std::endl;
+    
     std::cout << "<operatorstack>" << std::endl;
-    int c = 0;
     for (std::vector<std::string>::iterator it = operatorstack.begin(); it != operatorstack.end(); it++) {
-        std::cout << *it << " <" << std::to_string(argscountstack[c]) << ">" << std::endl;
+        std::cout << *it << std::endl;
+    }
+    std::cout << "</operatorstack>" << std::endl;
+    
+    int c = 0;
+    std::string debug = "";
+    int argsendpointer = 0;
+    int argspos = 0;
+    bool assigning = false;
+    bool defining = false;
+    Token* token = nullptr;
+    Function* func = nullptr;
+    for (std::vector<std::string>::iterator it = operatorstack.begin(); it != operatorstack.end(); it++) {
+        
+        token = nullptr; 
+        if (tokens.find(*it) != tokens.end()) {
+            token = tokens[*it];
+            token->args.clear();
+        }
+
+        func = nullptr;
+        if (functions.find(*it) != functions.end()) {
+            func = functions[*it];
+            func->args.clear();
+        }
+        
+        argsendpointer = argspos + argscountstack[c];
+
+        if (argspos != 0 && c != operatorstack.size() - 2)
+            argsendpointer += 1;
+
+        if (*it == "Dim")
+            assigning = true;
+        if (*it == "=")
+            defining = true;
+
+        std::string out = *it + " - < begins at = (" + std::to_string(argspos) + ") , end at = ("+ std::to_string(argsendpointer) +")>";
+
+        debug = "";
+
+        int tokenargscount = 0;
+        for (std::vector<std::string>::iterator it2 = argsstack.begin() + argspos; it2 != argsstack.end(); it2++) {
+            if (argspos < argsendpointer) {
+                std::string arg = *it2;
+                
+                if (InterpreterTools::is_variable(arg) && !assigning) {
+                    if (!(defining && tokenargscount == 0)) {
+                        arg = memory->get_variable(arg);
+                    }
+                }
+
+                debug += "," + arg;
+                
+                if (token != nullptr)
+                    token->args.push_back(arg);
+
+                if (func != nullptr)
+                    func->args.push_back(arg);
+                
+                tokenargscount++;
+                argspos++;
+            }
+        }
+
+        assigning = false;
+        defining = false;
+
+        out += " | will call args: (" + debug + ")";
+        std::cout << out << std::endl;
+        
+        if (token != nullptr)
+            token->execute();
+
+        if (func != nullptr)
+            func->execute();
+        
         c++;
     }
 

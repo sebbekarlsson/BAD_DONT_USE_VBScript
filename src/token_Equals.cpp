@@ -13,7 +13,7 @@ std::string token_Equals::execute() {
     if (this->args.size() < 1)
         return "";
     
-    memory->define_variable(args[0], args[2]);
+    memory->define_variable(args[0], args[1]);
 
     return args[0];
 };
